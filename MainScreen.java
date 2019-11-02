@@ -27,6 +27,8 @@ public class MainScreen {
     @FXML private TableColumn<Map, Object> yearColumn;
     @FXML private TableColumn<Map, String> journalBookTitleColumn;
     @FXML private TableColumn<Map, String> bibTexKeyColumn;
+    private boolean aRowIsSelected = false;
+    private int currentRowIndex = -1;
 
     public void addNewEntryMenuItemAction() {
 
@@ -35,9 +37,9 @@ public class MainScreen {
     public void openLibraryMenuItemAction() {
         Collection<BibTeXEntry> entries = JBibTex.readBibTexLibrary();
 
-        ObservableList<Map> entries1 = FXCollections.observableArrayList();
+        ObservableList<Map> entriesForColumns = FXCollections.observableArrayList();
 
-        Key numberKey = new Key("#");
+        Key numberKey = new Key("No");
 
         numberColumn.setCellValueFactory(new MapValueFactory<>(numberKey));
         titleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TITLE));
@@ -52,45 +54,22 @@ public class MainScreen {
 
         assert entries != null;
         for (BibTeXEntry entry: entries) {
-            Map<Key, Object> myMap = new HashMap<Key, Object>();
-
-//            entries1.add(entry);
-
-
+            Map<Key, Object> myMap = new HashMap<>();
+            myMap.put(numberKey, rowNumber);
+            myMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
 
             // @@@ IMPORTANT PART @@@
             // Every field of each entry is mapped as a key, value pair
             Map<Key, Value> allFields = entry.getFields();
-//            System.out.println(allFields);
-//            entries1.add(allFields);
-            // Type of the entry is printed before each entry
-//            System.out.println("Entry Type: " + entry.getType());
-            // For each field in an entry we loop through them and get them as key, value pairs and print them.
-            // author (key) = J. R. R. Tolkien (value)
-//            System.out.println("---------------> " + allFields.get(BibTeXEntry.KEY_AUTHOR).toUserString());
-//            System.out.println("\t" + key + " = " + value.toUserString())
-            myMap.put(numberKey, rowNumber);
-            myMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
             allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, myMap));
+
             myMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
-
-
-
-//            System.out.println(myMap);
-            entries1.add(myMap);
-//            tableView.setItems(entries1);
-
-            System.out.println();
+            entriesForColumns.add(myMap);
 
             rowNumber++;
         }
 
-//        entries1.add(myMap);
-
-//        System.out.println(tableView.getColumns());
-
-        tableView.setItems(entries1);
-//        System.out.println(entries1);
+        tableView.setItems(entriesForColumns);
     }
 
     public void addEntryFieldsIntoMap(Key key, Value value, Map map) {
@@ -103,5 +82,26 @@ public class MainScreen {
                 map.put(key, value.toUserString());
             }
         }
+    }
+
+    public void rowSelected() {
+        Map<Key, Value> currentRow;
+//        System.out.println("First: " + tableView.getSelectionModel().isSelected(currentRowIndex));
+        if (!aRowIsSelected) {
+            currentRow = tableView.getSelectionModel().getSelectedItem();
+            currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+            aRowIsSelected = true;
+        } else {
+//            System.out.println("Second: " + tableView.getSelectionModel().isSelected(currentRowIndex));
+            if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
+                tableView.getSelectionModel().clearSelection();
+                aRowIsSelected = false;
+            } else {
+                currentRow = tableView.getSelectionModel().getSelectedItem();
+                currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+            }
+        }
+
+
     }
 }
