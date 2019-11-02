@@ -17,28 +17,29 @@ public class JBibTex {
             fileChooser.setTitle("Open BibTex Library");
             File file = fileChooser.showOpenDialog(new Stage());
 
-            // A reader created to read the contents of the bib file.
-            BufferedReader reader = new BufferedReader(
-                    // Just passing the file into the reader makes the reader have all the contents of the file
-                    new FileReader(file)
-            );
+            if (file != null) {
+                // A reader created to read the contents of the bib file.
+                BufferedReader reader = new BufferedReader(
+                        // Just passing the file into the reader makes the reader have all the contents of the file
+                        new FileReader(file)
+                );
 
-            // A BibTex Database is created here. org.jbibtex part can be omitted
-            // This database is just a variable that stores all the values of the file
-            org.jbibtex.BibTeXDatabase bibTeXDatabase;
+                // A BibTex Database is created here. org.jbibtex part can be omitted
+                // This database is just a variable that stores all the values of the file
+                org.jbibtex.BibTeXDatabase bibTeXDatabase;
 
-            // BibTex Parser created here.
-            org.jbibtex.BibTeXParser bibTeXParser = new org.jbibtex.BibTeXParser();
-            //Database initialized to the parsed version of the reader/file by using the bibTexParser created above.
-            bibTeXDatabase = bibTeXParser.parse(reader);
+                // BibTex Parser created here.
+                org.jbibtex.BibTeXParser bibTeXParser = new org.jbibtex.BibTeXParser();
+                //Database initialized to the parsed version of the reader/file by using the bibTexParser created above.
+                bibTeXDatabase = bibTeXParser.parse(reader);
 
-            // Each BibTex Entry can be mapped to their key with the code below.
-            // Map<Key, BibTeXEntry> myMap = bibTeXDatabase.getEntries();
+                // Each BibTex Entry can be mapped to their key with the code below.
+                // Map<Key, BibTeXEntry> myMap = bibTeXDatabase.getEntries();
 
-            // A BibTex Entry collection is created and it includes all the entries within that specific file
-            Collection<BibTeXEntry> entries = bibTeXDatabase.getEntries().values();
+                // A BibTex Entry collection is created and it includes all the entries within that specific file
+                Collection<BibTeXEntry> entries = bibTeXDatabase.getEntries().values();
 
-            // This for loop loops through each entry in the bib file
+                // This for loop loops through each entry in the bib file
 //            for (BibTeXEntry entry: entries) {
 //
 //                // @@@ IMPORTANT PART @@@
@@ -52,8 +53,9 @@ public class JBibTex {
 //
 //                System.out.println();
 //            }
-            reader.close();
-            return entries;
+                reader.close();
+                return entries;
+            }
 
         } catch (org.jbibtex.ParseException e) {
             System.err.println("The BibTex file format is not correct. Please check your file.");
